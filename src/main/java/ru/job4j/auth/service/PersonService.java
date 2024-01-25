@@ -1,16 +1,21 @@
 package ru.job4j.auth.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.job4j.auth.domain.Person;
+import ru.job4j.auth.model.Person;
 import ru.job4j.auth.repository.PersonRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class PersonService {
+public class PersonService implements UserDetailsService {
 
     private final PersonRepository personRepository;
 
@@ -30,4 +35,10 @@ public class PersonService {
         personRepository.delete(person);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return personRepository.findByLogin(username)
+                .map(person -> new User(person.getLogin(), person.getPassword(), Collections.emptyList()))
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+    }
 }
