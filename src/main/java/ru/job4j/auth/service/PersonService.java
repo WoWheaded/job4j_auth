@@ -31,8 +31,15 @@ public class PersonService implements UserDetailsService {
         return personRepository.findById(id);
     }
 
-    public void delete(Person person) {
-        personRepository.delete(person);
+    public boolean deleteById(int id) {
+        boolean deleted = false;
+        try {
+            personRepository.deleteById(id);
+            deleted = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+         return deleted;
     }
 
     @Override
